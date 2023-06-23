@@ -1,9 +1,9 @@
 # Twitter Quotes Bot
 
-* ### A Python bot that automatically tweets quotes/lyrics at regular intervals using the Twitter API.
-* ### Can be deployed for free on [Replit](https://replit.com) or on your local machine or server.
-* ### This is an alternative for those previously using CheapBotsDoneQuick to run their bot.
-* ### This is a super simple version that is meant only for pure text tweets such as *posting quotes/lyrics hourly*. There is no support for *images/videos*. If you do need support for Images/Videos, please check out the repo mentioned in the *Credits* section down below.
+*  A Python bot that automatically tweets quotes/lyrics at regular intervals using the Twitter API.
+*  Can be deployed for free on [Replit](https://replit.com) or on your local machine or server.
+*  This is an alternative for those previously using CheapBotsDoneQuick to run their bot.
+*  This is a super simple version that is meant only for pure text tweets such as *posting quotes/lyrics hourly*. There is no support for *images/videos*. If you do need support for Images/Videos, please check out the repo mentioned in the *Credits* section down below.
 
 ## Setup:
 
