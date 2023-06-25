@@ -1,13 +1,15 @@
 [BotSettings]
 
-# Credentials from developer.twitter.com
-consumer_key = 
-consumer_secret = 
-access_token = 
-access_token_secret = 
-
 # Time in seconds to wait between tweets. Recomended is 1800 and above for 24x7 operation
 time_between_tweets = 1800
 
 # If running locally or on server set to False
 using_replit = True
+
+# Credentials from developer.twitter.com
+# ONLY SET CREDENTIALS HERE IF RUNNING LOCAL/SERVER
+# FOR REPLIT, PLEASE USE REPLIT SECRETS AS MENTIONED IN STEP 2
+consumer_key = 
+consumer_secret = 
+access_token = 
+access_token_secret = 
