@@ -21,10 +21,10 @@ else:
   exit()
 
 # Getting Twitter API Keys
-consumer_key = settings["consumer_key"]
-consumer_secret = settings["consumer_secret"]
-access_token = settings["access_token"]
-access_token_secret = settings["access_token_secret"]
+consumer_key = settings["consumer_key"] if settings["consumer_key"] != "" else os.getenv("consumer_key")
+consumer_secret = settings["consumer_secret"] if settings["consumer_secret"] != "" else os.getenv("consumer_secret")
+access_token = settings["access_token"] if settings["access_token"] != "" else os.getenv("access_token")
+access_token_secret = settings["access_token_secret"] if settings["access_token_secret"] != "" else os.getenv("access_token_secret")
 print("Obtained Credentials...")
 
 # Initialising Twitter API Client
