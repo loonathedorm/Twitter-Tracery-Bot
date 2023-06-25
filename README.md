@@ -1,9 +1,9 @@
-# Twitter Quotes Bot
+# Twitter Bot
 
-*  A Python bot that automatically tweets quotes/lyrics at regular intervals using the Twitter API.
-*  Can be deployed for free on [Replit](https://replit.com) or on your local machine or server.
-*  This is an alternative for those previously using CheapBotsDoneQuick to run their bot.
-*  This is a super simple version that is meant only for pure text tweets such as *posting quotes/lyrics hourly*. There is no support for *images/videos*. If you do need support for Images/Videos, please check out the repo mentioned in the *Credits* section down below.
+* ### A Python bot that automatically tweets quotes/lyrics at regular intervals using the Twitter API.
+* ### Can be deployed for free on [Replit](https://replit.com) or on your local machine or server.
+* ### This is an alternative for those previously using CheapBotsDoneQuick to run their bot.
+* ### This is a super simple version that is meant only for pure text tweets such as *posting quotes/lyrics hourly*. There is no support for *images/videos*. If you do need support for Images/Videos, please check out the repo mentioned in the *Credits* section down below.
 
 ## Setup:
 
@@ -27,8 +27,11 @@
        ```
      - Follow steps **8 to 14** from [this guide](https://github.com/loonathedorm/Twitter-Quotes-Bot/blob/main/CBDQ-like%20Python%20Bot%20Hosting.pdf) to obtain required twitter credentials
 2. Edit the `settings` file:
-   - Enter your Twitter API credentials in the designated fields. API Key/Secret = Consumer Key/Secret
-   - Set the time interval (in seconds) between each tweet. ***It is recommended to set it to 1800 or above if running the bot 24x7, as the API free tier limit is 1500 tweets per month.***
+   - **If using replit:**
+      - Follow steps **15 to 16** from [this guide](https://github.com/loonathedorm/Twitter-Quotes-Bot/blob/main/CBDQ-like%20Python%20Bot%20Hosting.pdf) to add your credentials to the bot.
+   - **For Local/Server:**
+      - Enter your Twitter API credentials in the designated fields in `settings` file. API Key/Secret = Consumer Key/Secret
+   - **For both use-cases:** Set the time interval (in seconds) between each tweet. ***It is recommended to set it to 1800 or above if running the bot 24x7, as the API free tier limit is 1500 tweets per month.***
    - Set the value of `using_replit` to `False` if deploying the bot locally or on a server. If running on Replit, leave it as the default value (`True`).
 
 3. Add your quotes/lyrics content:
