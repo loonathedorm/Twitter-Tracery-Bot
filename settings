@@ -9,7 +9,12 @@ using_replit = True
 # Credentials from developer.twitter.com
 # ONLY SET CREDENTIALS HERE IF RUNNING LOCAL/SERVER
 # FOR REPLIT, PLEASE USE REPLIT SECRETS AS MENTIONED IN STEP 2
-consumer_key = 
-consumer_secret = 
-access_token = 
-access_token_secret = 
+consumer_key = yt
+consumer_secret = yt
+access_token = yt
+access_token_secret = yt
+
+
+## DO NOT EDIT BELOW VALUE
+## THIS IS SET AUTOMATICALLY BY THE BOT
+last_tweet_time = 1900-01-01 00:00:00.000000
