@@ -1,5 +1,11 @@
-import os, json, tweepy, time, random
+import os
+import time
+import sys
+import json
 from datetime import datetime
+import tweepy
+import tracery
+from tracery.modifiers import base_english
 import configparser
 
 # Initialising settings file
@@ -19,7 +25,7 @@ elif using_replit.lower() == "false":
     print("Running in local/server mode...")
 else:
     print("Please set 'using_server' value in setting file to 'True' or 'False'")
-    exit()
+    sys.exit()
 
 # Getting Twitter API Keys
 consumer_key = settings["consumer_key"] if settings["consumer_key"] != "" else os.getenv("consumer_key")
@@ -38,33 +44,32 @@ print("####---> Starting loop...")
 
 # Main Loop that selects random quote and posts it on Twitter
 print(f'####---> Time between tweets set to {time_between_tweets} seconds...')
-while True:
-    quotesjson_raw = open("bot.json", 'r', encoding="utf-8")
-    quotesjson = json.load(quotesjson_raw)
-    quotes = []
-    for quote in quotesjson["origin"]:
-        quotes.append(quote)
-    random.shuffle(quotes)
-    for quote in quotes:
-        
-        # Calculating time difference between tweets
-        time_now = datetime.now()
-        with open("settings", 'r', encoding="utf-8") as settings_file:
-            lines = settings_file.readlines()
-        last_line_time_string = lines[-1].split("= ")[-1].split('\n')[0]
-        last_tweet_time = datetime.strptime(last_line_time_string, "%Y-%m-%d %H:%M:%S.%f")
-        time_diff = int(((time_now) - last_tweet_time).total_seconds())
 
-        # Tweet decision based on time difference
-        if time_diff >= time_between_tweets or "-" in str(time_diff):
-            tweet = Client.create_tweet(text=quote)
-            print(f'\n####---> Posted: ID={tweet[0]["id"]}, QUOTE={quote}')
-            quotesjson_raw.close()
-            lines[-1] = "last_tweet_time = " + str(time_now)    
-            with open("settings", 'w', encoding="utf-8") as settings_file:
-                settings_file.writelines(lines)
-            time.sleep(time_between_tweets)
-        else:
-            diff = time_between_tweets - time_diff
-            print(f'####---> Sleeping for {diff} seconds...')
-            time.sleep(diff)
+with open("bot.json", 'r', encoding="utf-8") as quotesjson_raw:
+    quotesjson = json.load(quotesjson_raw)
+    grammar = tracery.Grammar(quotesjson)
+    grammar.add_modifiers(base_english)
+
+while True:
+    quote = grammar.flatten("#origin#")
+    # Calculating time difference between tweets
+    time_now = datetime.now()
+    with open("settings", 'r', encoding="utf-8") as settings_file:
+        lines = settings_file.readlines()
+    last_line_time_string = lines[-1].split("= ")[-1].split('\n')[0]
+    last_tweet_time = datetime.strptime(last_line_time_string, "%Y-%m-%d %H:%M:%S.%f")
+    time_diff = int(((time_now) - last_tweet_time).total_seconds())
+
+    # Tweet decision based on time difference
+    if time_diff >= time_between_tweets or "-" in str(time_diff):
+        tweet = Client.create_tweet(text=quote)
+        print(f'\n####---> Posted: ID={tweet[0]["id"]}, QUOTE={quote}')
+        quotesjson_raw.close()
+        lines[-1] = "last_tweet_time = " + str(time_now)    
+        with open("settings", 'w', encoding="utf-8") as settings_file:
+            settings_file.writelines(lines)
+        time.sleep(time_between_tweets)
+    else:
+        diff = time_between_tweets - time_diff
+        print(f'####---> Sleeping for {diff} seconds...')
+        time.sleep(diff)
