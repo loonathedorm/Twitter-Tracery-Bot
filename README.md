@@ -4,6 +4,7 @@
 * ### Can be deployed for free on [Replit](https://replit.com) or on your local machine or server.
 * ### This is an alternative for those previously using CheapBotsDoneQuick to run their bot.
 * ### This is a super simple version that is meant only for pure text tweets such as *posting quotes/lyrics hourly*. There is no support for *images/videos*. If you do need support for Images/Videos, please check out the repo mentioned in the *Credits* section down below.
+* ### Recently added Tracery support now allows you to run bots that use a more complex .json file.
 
 ## Setup:
 
@@ -23,7 +24,7 @@
        ```
      - Run the following command to install the required packages (Assuming you already have python installed):
        ```
-       pip3 install tweepy flask
+       pip3 install tweepy flask tracery3
        ```
      - Follow steps **8 to 14** from [this guide](https://github.com/loonathedorm/Twitter-Quotes-Bot/blob/main/CBDQ-like%20Python%20Bot%20Hosting.pdf) to obtain required twitter credentials
 2. Edit the `settings` file:
@@ -69,3 +70,4 @@
 # Credits:
 - This code is a super simplified and modified version of [@GuglioIsStupid](https://github.com/GuglioIsStupid/)'s **CBDQ-Python** bot that you can check out [here](https://github.com/GuglioIsStupid/CBDQ-Python).
 - The PDF guide refered to in this repo is also by [@GuglioIsStupid](https://github.com/GuglioIsStupid/)
+- [@ShiJbey](https://github.com/ShiJbey) for the updated python port of Kate Compton's Tracery text expansion library.Check it out [here](https://github.com/ShiJbey/pytracery3).
