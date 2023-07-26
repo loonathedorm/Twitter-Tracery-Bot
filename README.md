@@ -16,7 +16,8 @@
      - Paste the link to this repo in the space provided
      - Under Languages, it should now automatically select Python.
      - click **Import From GitHub** on bottom right corner of pop-up
-     - Once done importing, follow steps **6 to 14** from [this guide](https://github.com/loonathedorm/Twitter-Quotes-Bot/blob/main/CBDQ-like%20Python%20Bot%20Hosting.pdf) to install required package and to obtain required twitter credentials
+     - Once done importing, follow steps **6 to 14** from [this guide](https://github.com/loonathedorm/Twitter-Quotes-Bot/blob/main/CBDQ-like%20Python%20Bot%20Hosting.pdf) to install required package and to obtain required twitter credentials.
+     - You also need to **repeat Step 7** from above pdf to install another package called **`tracery3`**.
    - If deploying Locally or on a Server:
      - Clone this repo:
        ```
