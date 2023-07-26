@@ -1,4 +1,4 @@
-# Twitter Bot
+# Twitter Quotes Bot
 
 * ### A Python bot that automatically tweets quotes/lyrics at regular intervals using the Twitter API.
 * ### Can be deployed for free on [Replit](https://replit.com) or on your local machine or server.
