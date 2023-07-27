@@ -2,11 +2,14 @@ import os
 import time
 import sys
 import json
+import requests
 from datetime import datetime
 import tweepy
 import tracery
 from tracery.modifiers import base_english
 import configparser
+
+version = "v2.1"
 
 # Initialising settings file
 config = configparser.ConfigParser()
