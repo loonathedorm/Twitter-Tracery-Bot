@@ -11,6 +11,16 @@ import configparser
 
 version = "v2.1"
 
+# Version check
+latest_version = requests.get("https://raw.githubusercontent.com/loonathedorm/Twitter-Quotes-Bot/main/version")
+if latest_version.text != version:
+    print(f"####---> Current Version = {version}, Latest Version = {latest_version.text}")
+    print("####---> Please update the bot to continue with latest fixes and features.")
+    print("####---> To update, type 'git pull' and hit enter inside the shell tab and then restart the bot.")
+    sys.exit()
+else:
+    print(f"####---> Current Version = {version}")
+
 # Initialising settings file
 config = configparser.ConfigParser()
 config.read("settings")
@@ -39,9 +49,9 @@ print("####---> Obtained Credentials...")
 
 # Initialising Twitter API Client
 Client = tweepy.Client(consumer_key=consumer_key,
-                       consumer_secret=consumer_secret,
-                       access_token=access_token,
-                       access_token_secret=access_token_secret)
+                    consumer_secret=consumer_secret,
+                    access_token=access_token,
+                    access_token_secret=access_token_secret)
 
 print("####---> Starting loop...")
 
