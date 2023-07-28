@@ -10,7 +10,7 @@ import tracery
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v3.1"
+version = "v3"
 
 def version_check():
     """Check for latest version"""
@@ -85,7 +85,7 @@ def main():
     # Initialising base settings
     config_file = "settings"
     config = configparser.ConfigParser()
-    config.read(settings_file)
+    config.read(config_file)
     settings = config['BotSettings']
 
     # Parsing Arguments
