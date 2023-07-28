@@ -10,7 +10,7 @@ import tracery
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v3"
+version = "v3.1"
 
 def version_check():
     """Check for latest version"""
