@@ -10,7 +10,7 @@ import tracery
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v3"
+version = "v3.1"
 
 def version_check():
     """Check for latest version"""
@@ -83,7 +83,7 @@ def main():
     version_check()
 
     # Initialising base settings
-    settings_file = "settings"
+    config_file = "settings"
     config = configparser.ConfigParser()
     config.read(settings_file)
     settings = config['BotSettings']
@@ -110,7 +110,7 @@ def main():
         quote = tracery_magic()
         # Calculating time difference between tweets
         time_now = datetime.now()
-        with open(settings_file, 'r', encoding="utf-8") as settings_file:
+        with open(config_file, 'r', encoding="utf-8") as settings_file:
             lines = settings_file.readlines()
         last_line_time_string = lines[-1].split("= ")[-1].split('\n')[0]
         last_tweet_time = datetime.strptime(last_line_time_string, "%Y-%m-%d %H:%M:%S.%f")
@@ -120,7 +120,7 @@ def main():
         if time_diff >= time_between_tweets or "-" in str(time_diff):
             post_to_twitter(settings, quote)
             lines[-1] = "last_tweet_time = " + str(time_now)    
-            with open(settings_file, 'w', encoding="utf-8") as settings_file:
+            with open(config_file, 'w', encoding="utf-8") as settings_file:
                 settings_file.writelines(lines)
             time.sleep(time_between_tweets)
         else:
@@ -130,4 +130,5 @@ def main():
 
 
 # Runs the bot, all functions & everything
-main()
+if __name__ == "__main__":
+    main()
