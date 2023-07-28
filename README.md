@@ -8,7 +8,7 @@
 
 ## Setup:
 
-- ### A full detailed Set-Up guide is available here.
+- ### A full detailed Set-Up guide is available [here](https://raw.githubusercontent.com/loonathedorm/Twitter-Quotes-Bot/main/Twitter-Bot-SetUp-Guide.pdf).
 ---
 
 ## Contact: 
