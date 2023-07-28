@@ -6,6 +6,9 @@
 * ### This is a super simple version that is meant only for pure text tweets such as *posting quotes/lyrics hourly*. There is no support for *images/videos*. If you do need support for Images/Videos, please check out the repo mentioned in the *Credits* section down below.
 * ### Recently added Tracery support now allows you to run bots that use a more complex .json file.
 
+## See it in action:
+- ### Check out [@FFiftyLyricsBot](https://twitter.com/FFiftylyricsbot) on Twitter
+
 ## Setup:
 
 - ### A full detailed Set-Up guide is available [here](https://raw.githubusercontent.com/loonathedorm/Twitter-Quotes-Bot/main/Twitter-Bot-SetUp-Guide.pdf).
