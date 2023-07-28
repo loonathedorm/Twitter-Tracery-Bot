@@ -6,7 +6,7 @@ app = Flask('')
 
 @app.route('/')
 def home():
-  return "I'm alive"
+  return "Bot Script is running! If the bot still isn't functioning, check replit console for more details."
 
 
 def run():
