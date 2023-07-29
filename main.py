@@ -10,7 +10,7 @@ import tracery
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v3.2"
+version = "v3.3"
 
 def version_check():
     """Check for latest version"""
@@ -51,9 +51,8 @@ def init_twitter_client(settings):
                         access_token_secret=access_token_secret)
     return Client
 
-def post_to_twitter(settings,quote):
+def post_to_twitter(Client,quote):
     """Posts text to twitter"""
-    Client = init_twitter_client(settings)
     tweet = Client.create_tweet(text=quote)
     print(f'\n####---> Posted: ID={tweet[0]["id"]}, QUOTE={quote}')
 
@@ -96,7 +95,8 @@ def main():
         sys.exit()
     if args.tweet:
         quote = tracery_magic()
-        post_to_twitter(settings,quote)
+        Client = init_twitter_client(settings)
+        post_to_twitter(Client,quote)
         sys.exit()
 
     using_replit = settings["using_replit"]
@@ -104,6 +104,7 @@ def main():
     print("####---> Starting bot...")
     time_between_tweets = int(settings["time_between_tweets"])
     print(f'####---> Time between tweets set to {time_between_tweets} seconds...')
+    Client = init_twitter_client(settings)
 
     # The main loop of the bot
     while True:
@@ -118,7 +119,7 @@ def main():
 
         # Tweet decision based on time difference
         if time_diff >= time_between_tweets or "-" in str(time_diff):
-            post_to_twitter(settings, quote)
+            post_to_twitter(Client,quote)
             lines[-1] = "last_tweet_time = " + str(time_now)    
             with open(config_file, 'w', encoding="utf-8") as settings_file:
                 settings_file.writelines(lines)
