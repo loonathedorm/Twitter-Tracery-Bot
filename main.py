@@ -5,12 +5,13 @@ import json
 import requests
 import configparser
 import argparse
+import logging
 import tweepy
 import tracery
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v3.4"
+version = "v3.5"
 
 def version_check():
     """Check for latest version"""
@@ -65,6 +66,11 @@ def tracery_magic():
         quote = grammar.flatten("#origin#")
     return quote
 
+def init_logger():
+    logging.basicConfig(filename="bot.log",format='\n%(asctime)s %(message)s',filemode='a')
+    logger = logging.getLogger()
+    return logger
+
 def parse_args(args):
     """Parse arguments given to the bot"""
     parser = argparse.ArgumentParser()
@@ -83,7 +89,7 @@ def main():
     version_check()
 
     # Initialising base settings
-    config_file = "settings"
+    config_file = "test-settings"
     config = configparser.ConfigParser()
     config.read(config_file)
     settings = config['BotSettings']
@@ -132,7 +138,10 @@ def main():
                 print(f'####---> Sleeping for {diff} seconds...')
                 time.sleep(diff)
     except Exception as error:
-        print(f'An error has occured: {error}')
+        logger = init_logger()
+        error_string = f'An error has occured: {error}'
+        print(error_string)
+        logger.exception(error_string)
         sys.exit()
 
 # Runs the bot, all functions & everything
