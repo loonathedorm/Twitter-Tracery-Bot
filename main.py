@@ -10,7 +10,7 @@ import tracery
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v3.3"
+version = "v3.4"
 
 def version_check():
     """Check for latest version"""
@@ -79,6 +79,7 @@ def parse_args(args):
 def main():
     """The main function of the bot."""
 
+    # Performing a version check before running anything else
     version_check()
 
     # Initialising base settings
@@ -99,6 +100,7 @@ def main():
         post_to_twitter(Client,quote)
         sys.exit()
 
+    # Replit check & bot/API initialization
     using_replit = settings["using_replit"]
     replit_check(using_replit)
     print("####---> Starting bot...")
@@ -107,28 +109,31 @@ def main():
     Client = init_twitter_client(settings)
 
     # The main loop of the bot
-    while True:
-        quote = tracery_magic()
-        # Calculating time difference between tweets
-        time_now = datetime.now()
-        with open(config_file, 'r', encoding="utf-8") as settings_file:
-            lines = settings_file.readlines()
-        last_line_time_string = lines[-1].split("= ")[-1].split('\n')[0]
-        last_tweet_time = datetime.strptime(last_line_time_string, "%Y-%m-%d %H:%M:%S.%f")
-        time_diff = int(((time_now) - last_tweet_time).total_seconds())
+    try:
+        while True:
+            quote = tracery_magic()
+            # Calculating time difference between tweets
+            time_now = datetime.now()
+            with open(config_file, 'r', encoding="utf-8") as settings_file:
+                lines = settings_file.readlines()
+            last_line_time_string = lines[-1].split("= ")[-1].split('\n')[0]
+            last_tweet_time = datetime.strptime(last_line_time_string, "%Y-%m-%d %H:%M:%S.%f")
+            time_diff = int(((time_now) - last_tweet_time).total_seconds())
 
-        # Tweet decision based on time difference
-        if time_diff >= time_between_tweets or "-" in str(time_diff):
-            post_to_twitter(Client,quote)
-            lines[-1] = "last_tweet_time = " + str(time_now)    
-            with open(config_file, 'w', encoding="utf-8") as settings_file:
-                settings_file.writelines(lines)
-            time.sleep(time_between_tweets)
-        else:
-            diff = time_between_tweets - time_diff
-            print(f'####---> Sleeping for {diff} seconds...')
-            time.sleep(diff)
-
+            # Tweet decision based on time difference
+            if time_diff >= time_between_tweets or "-" in str(time_diff):
+                post_to_twitter(Client,quote)
+                lines[-1] = "last_tweet_time = " + str(time_now)    
+                with open(config_file, 'w', encoding="utf-8") as settings_file:
+                    settings_file.writelines(lines)
+                time.sleep(time_between_tweets)
+            else:
+                diff = time_between_tweets - time_diff
+                print(f'####---> Sleeping for {diff} seconds...')
+                time.sleep(diff)
+    except Exception as error:
+        print(f'An error has occured: {error}')
+        sys.exit()
 
 # Runs the bot, all functions & everything
 if __name__ == "__main__":
