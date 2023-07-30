@@ -89,7 +89,7 @@ def main():
     version_check()
 
     # Initialising base settings
-    config_file = "test-settings"
+    config_file = "settings"
     config = configparser.ConfigParser()
     config.read(config_file)
     settings = config['BotSettings']
