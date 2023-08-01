@@ -3,8 +3,12 @@
 # Time in seconds to wait between tweets. Recomended is 1800 and above for 24x7 operation
 time_between_tweets = 1800
 
-# If running locally or on server set to False
+# [REPLIT] If running locally or on server set to False
 using_replit = True
+
+# [OTHER SETTINGS] - Change as per your preference
+# Setting include_datetime to True will add the current date+time to the begining of each tweet
+include_datetime = False
 
 # Credentials from developer.twitter.com
 # ONLY SET CREDENTIALS HERE IF RUNNING LOCAL/SERVER
@@ -13,7 +17,6 @@ consumer_key =
 consumer_secret = 
 access_token = 
 access_token_secret = 
-
 
 ## DO NOT EDIT BELOW VALUE
 ## THIS IS SET AUTOMATICALLY BY THE BOT
