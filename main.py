@@ -8,10 +8,11 @@ import argparse
 import logging
 import tweepy
 import tracery
+import keep_alive
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v3.5"
+version = "v3.6"
 
 def version_check():
     """Check for latest version"""
@@ -28,7 +29,6 @@ def replit_check(using_replit):
     """Checking for server or replit mode"""
     if using_replit.lower() == "true":
     # Running flask web server to indicate bot status
-        import keep_alive
         keep_alive.keep_alive()
         print("####---> Running in replit mode...")
     elif using_replit.lower() == "false":
@@ -52,8 +52,10 @@ def init_twitter_client(settings):
                         access_token_secret=access_token_secret)
     return Client
 
-def post_to_twitter(Client,quote):
-    """Posts text to twitter"""
+def post_to_twitter(Client,quote,include_datetime):
+    """Handles posting to twitter"""
+    if include_datetime.lower() == 'true':
+        quote = (f"[{str(datetime.now()).rsplit(':',1)[0]}]\n\n") + quote
     tweet = Client.create_tweet(text=quote)
     print(f'\n####---> Posted: ID={tweet[0]["id"]}, QUOTE={quote}')
 
@@ -67,6 +69,7 @@ def tracery_magic():
     return quote
 
 def init_logger():
+    """Logs exceptions to file"""
     logging.basicConfig(filename="bot.log",format='\n%(asctime)s %(message)s',filemode='a')
     logger = logging.getLogger()
     return logger
@@ -93,6 +96,10 @@ def main():
     config = configparser.ConfigParser()
     config.read(config_file)
     settings = config['BotSettings']
+    using_replit = settings["using_replit"]
+    time_between_tweets = int(settings["time_between_tweets"])
+    include_datetime = settings["include_datetime"]
+    Client = init_twitter_client(settings)
 
     # Parsing Arguments
     args = parse_args(sys.argv[1:])
@@ -102,17 +109,13 @@ def main():
         sys.exit()
     if args.tweet:
         quote = tracery_magic()
-        Client = init_twitter_client(settings)
-        post_to_twitter(Client,quote)
+        post_to_twitter(Client,quote,include_datetime)
         sys.exit()
 
     # Replit check & bot/API initialization
-    using_replit = settings["using_replit"]
     replit_check(using_replit)
     print("####---> Starting bot...")
-    time_between_tweets = int(settings["time_between_tweets"])
     print(f'####---> Time between tweets set to {time_between_tweets} seconds...')
-    Client = init_twitter_client(settings)
 
     # The main loop of the bot
     try:
@@ -128,7 +131,7 @@ def main():
 
             # Tweet decision based on time difference
             if time_diff >= time_between_tweets or "-" in str(time_diff):
-                post_to_twitter(Client,quote)
+                post_to_twitter(Client,quote,include_datetime)
                 lines[-1] = "last_tweet_time = " + str(time_now)    
                 with open(config_file, 'w', encoding="utf-8") as settings_file:
                     settings_file.writelines(lines)
