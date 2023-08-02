@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import sys
 import json
@@ -12,7 +13,7 @@ import keep_alive
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v3.6"
+version = "v4"
 
 def version_check():
     """Check for latest version"""
@@ -37,7 +38,7 @@ def replit_check(using_replit):
         print("####---> Please set 'using_server' value in setting file to 'True' or 'False'")
         sys.exit()
 
-def init_twitter_client(settings):
+def init_twitter_client():
     """Initialising Twitter API Client"""
     # Getting Twitter API Keys
     consumer_key = settings["consumer_key"] if settings["consumer_key"] != "" else os.getenv("consumer_key")
@@ -46,33 +47,73 @@ def init_twitter_client(settings):
     access_token_secret = settings["access_token_secret"] if settings["access_token_secret"] != "" else os.getenv("access_token_secret")
     print("####---> Obtained Credentials...")
 
-    Client = tweepy.Client(consumer_key=consumer_key,
+    auth = tweepy.OAuthHandler(consumer_key,consumer_secret)
+    auth.set_access_token(access_token,access_token_secret)
+    api_v1 = tweepy.API(auth)
+    api_v2 = tweepy.Client(consumer_key=consumer_key,
                         consumer_secret=consumer_secret,
                         access_token=access_token,
                         access_token_secret=access_token_secret)
-    return Client
+    return api_v1, api_v2
 
-def post_to_twitter(Client,quote,include_datetime):
-    """Handles posting to twitter"""
+def get_imgs(api_v1,imgs):
+    """Downloads images from url list and returns image filepaths"""
+    media_ids = []
+    for img in imgs:
+        try:
+            filepath = f"temp-imgs/{img.rsplit('/',1)[1]}"
+            request = requests.get(url=img, stream=True,timeout=60)
+            with open (filepath, 'wb') as image:
+                for chunk in request:
+                    image.write(chunk)
+            media_id = upload_to_twitter(api_v1, filepath)
+            media_ids.append(media_id)
+        except Exception as error:
+            add_to_log(f"{error} for image {img}")
+            backup_file = "temp-imgs/unavailable.jpg"
+            media_id = upload_to_twitter(api_v1, backup_file)
+            media_ids.append(media_id)
+        finally:
+            if os.path.isfile(filepath):
+                os.remove(filepath)
+    return media_ids
+
+def upload_to_twitter(api_v1,img):
+    """Handles uploading media to twitter using API v1"""
+    media = api_v1.media_upload(img)
+    return media.media_id
+
+def post_to_twitter(api_v2,quote,include_datetime,media_ids=None):
+    """Handles posting to twitter (with or without media)"""
     if include_datetime.lower() == 'true':
         quote = (f"[{str(datetime.now()).rsplit(':',1)[0]}]\n\n") + quote
-    tweet = Client.create_tweet(text=quote)
+    tweet = api_v2.create_tweet(media_ids=media_ids,text=quote)
     print(f'\n####---> Posted: ID={tweet[0]["id"]}, QUOTE={quote}')
 
 def tracery_magic():
-    """Opening json and applying tracery magic"""
+    """Opening json and applying tracery magic.
+        Also parses generated quotes to separate text and images."""
     with open("bot.json", 'r', encoding="utf-8") as quotesjson_raw:
         quotesjson = json.load(quotesjson_raw)
         grammar = tracery.Grammar(quotesjson)
         grammar.add_modifiers(base_english)
         quote = grammar.flatten("#origin#")
-    return quote
+    raw_img_links = re.findall(r'\{img\s[^}]*\}', quote)
+    parsed_quote = re.sub(r'\{img\s[^}]*\}', '', quote)
+    imgs = re.findall(r'\bhttps?://[^}\s]+',' '.join(raw_img_links))
+    return parsed_quote,imgs
 
 def init_logger():
     """Logs exceptions to file"""
     logging.basicConfig(filename="bot.log",format='\n%(asctime)s %(message)s',filemode='a')
-    logger = logging.getLogger()
-    return logger
+    return logging.getLogger()
+
+def add_to_log(error):
+    """Adds a new entry to the logfile"""
+    error_string = f'An error has occured: {error}'
+    print(error_string)
+    logger.exception(error_string)
+
 
 def parse_args(args):
     """Parse arguments given to the bot"""
@@ -86,7 +127,8 @@ def parse_args(args):
     return parser.parse_args(args)
 
 def main():
-    """The main function of the bot."""
+    """The main function for the bot.
+        This runs everything in the order that it is supposed to run"""
 
     # Performing a version check before running anything else
     version_check()
@@ -95,21 +137,29 @@ def main():
     config_file = "settings"
     config = configparser.ConfigParser()
     config.read(config_file)
+    global settings
     settings = config['BotSettings']
+    global logger
+    logger = init_logger()
     using_replit = settings["using_replit"]
     time_between_tweets = int(settings["time_between_tweets"])
     include_datetime = settings["include_datetime"]
-    Client = init_twitter_client(settings)
+    api_v1, api_v2 = init_twitter_client()
+
 
     # Parsing Arguments
     args = parse_args(sys.argv[1:])
     if args.quote:
-        quote = tracery_magic()
-        print(quote)
+        quote,imgs = tracery_magic()
+        print(quote,imgs)
         sys.exit()
     if args.tweet:
-        quote = tracery_magic()
-        post_to_twitter(Client,quote,include_datetime)
+        quote,imgs = tracery_magic()
+        if not imgs:
+            post_to_twitter(api_v2,quote,include_datetime)
+        else:
+            media_ids = get_imgs(api_v1,imgs)
+            post_to_twitter(api_v2,quote,include_datetime,media_ids)
         sys.exit()
 
     # Replit check & bot/API initialization
@@ -120,7 +170,7 @@ def main():
     # The main loop of the bot
     try:
         while True:
-            quote = tracery_magic()
+            quote,imgs = tracery_magic()
             # Calculating time difference between tweets
             time_now = datetime.now()
             with open(config_file, 'r', encoding="utf-8") as settings_file:
@@ -131,8 +181,12 @@ def main():
 
             # Tweet decision based on time difference
             if time_diff >= time_between_tweets or "-" in str(time_diff):
-                post_to_twitter(Client,quote,include_datetime)
-                lines[-1] = "last_tweet_time = " + str(time_now)    
+                if not imgs:
+                    post_to_twitter(api_v2,quote,include_datetime)
+                else:
+                    media_ids = get_imgs(api_v1,imgs)
+                    post_to_twitter(api_v2,quote,include_datetime,media_ids)
+                lines[-1] = "last_tweet_time = " + str(time_now)
                 with open(config_file, 'w', encoding="utf-8") as settings_file:
                     settings_file.writelines(lines)
                 time.sleep(time_between_tweets)
@@ -141,10 +195,7 @@ def main():
                 print(f'####---> Sleeping for {diff} seconds...')
                 time.sleep(diff)
     except Exception as error:
-        logger = init_logger()
-        error_string = f'An error has occured: {error}'
-        print(error_string)
-        logger.exception(error_string)
+        add_to_log(error)
         sys.exit()
 
 # Runs the bot, all functions & everything
