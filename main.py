@@ -13,7 +13,7 @@ import keep_alive
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v4"
+version = "v4.1"
 
 def version_check():
     """Check for latest version"""
@@ -103,16 +103,12 @@ def tracery_magic():
     imgs = re.findall(r'\bhttps?://[^}\s]+',' '.join(raw_img_links))
     return parsed_quote,imgs
 
-def init_logger():
-    """Logs exceptions to file"""
-    logging.basicConfig(filename="bot.log",format='\n%(asctime)s %(message)s',filemode='a')
-    return logging.getLogger()
-
 def add_to_log(error):
     """Adds a new entry to the logfile"""
+    logging.basicConfig(filename="bot.log",format='\n%(asctime)s %(message)s',filemode='a')
     error_string = f'An error has occured: {error}'
     print(error_string)
-    logger.exception(error_string)
+    logging.exception(error_string)
 
 
 def parse_args(args):
@@ -139,8 +135,6 @@ def main():
     config.read(config_file)
     global settings
     settings = config['BotSettings']
-    global logger
-    logger = init_logger()
     using_replit = settings["using_replit"]
     time_between_tweets = int(settings["time_between_tweets"])
     include_datetime = settings["include_datetime"]
