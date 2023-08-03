@@ -13,7 +13,7 @@ import keep_alive
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v4.1"
+version = "v4.3"
 
 def version_check():
     """Check for latest version"""
@@ -32,6 +32,7 @@ def replit_check(using_replit):
     # Running flask web server to indicate bot status
         keep_alive.keep_alive()
         print("####---> Running in replit mode...")
+        time.sleep(2)
     elif using_replit.lower() == "false":
         print("####---> Running in local/server mode...")
     else:
@@ -107,7 +108,7 @@ def add_to_log(error):
     """Adds a new entry to the logfile"""
     logging.basicConfig(filename="bot.log",format='\n%(asctime)s %(message)s',filemode='a')
     error_string = f'An error has occured: {error}'
-    print(error_string)
+    print(f'####---> {error_string}')
     logging.exception(error_string)
 
 
@@ -162,35 +163,39 @@ def main():
     print(f'####---> Time between tweets set to {time_between_tweets} seconds...')
 
     # The main loop of the bot
-    try:
-        while True:
-            quote,imgs = tracery_magic()
-            # Calculating time difference between tweets
-            time_now = datetime.now()
-            with open(config_file, 'r', encoding="utf-8") as settings_file:
-                lines = settings_file.readlines()
-            last_line_time_string = lines[-1].split("= ")[-1].split('\n')[0]
-            last_tweet_time = datetime.strptime(last_line_time_string, "%Y-%m-%d %H:%M:%S.%f")
-            time_diff = int(((time_now) - last_tweet_time).total_seconds())
+    while True:
+        quote,imgs = tracery_magic()
+        # Calculating time difference between tweets
+        time_now = datetime.now()
+        with open(config_file, 'r', encoding="utf-8") as settings_file:
+            lines = settings_file.readlines()
+        last_line_time_string = lines[-1].split("= ")[-1].split('\n')[0]
+        last_tweet_time = datetime.strptime(last_line_time_string, "%Y-%m-%d %H:%M:%S.%f")
+        time_diff = int(((time_now) - last_tweet_time).total_seconds())
 
-            # Tweet decision based on time difference
-            if time_diff >= time_between_tweets or "-" in str(time_diff):
-                if not imgs:
-                    post_to_twitter(api_v2,quote,include_datetime)
-                else:
-                    media_ids = get_imgs(api_v1,imgs)
-                    post_to_twitter(api_v2,quote,include_datetime,media_ids)
-                lines[-1] = "last_tweet_time = " + str(time_now)
-                with open(config_file, 'w', encoding="utf-8") as settings_file:
-                    settings_file.writelines(lines)
-                time.sleep(time_between_tweets)
-            else:
-                diff = time_between_tweets - time_diff
-                print(f'####---> Sleeping for {diff} seconds...')
-                time.sleep(diff)
-    except Exception as error:
-        add_to_log(error)
-        sys.exit()
+        # Tweet decision based on time difference
+        if time_diff >= time_between_tweets or "-" in str(time_diff):
+            for num in range(2):
+                try:
+                    if not imgs:
+                        post_to_twitter(api_v2,quote,include_datetime)
+                    else:
+                        media_ids = get_imgs(api_v1,imgs)
+                        post_to_twitter(api_v2,quote,include_datetime,media_ids)
+                    lines[-1] = "last_tweet_time = " + str(time_now)
+                    with open(config_file, 'w', encoding="utf-8") as settings_file:
+                        settings_file.writelines(lines)
+                    break
+                except Exception as error:
+                    add_to_log(error)
+                    retry_after = 20
+                    print(f"####---> Retrying in {retry_after} seconds...")
+                    time.sleep(retry_after)
+            time.sleep(time_between_tweets)
+        else:
+            diff = time_between_tweets - time_diff
+            print(f'####---> Sleeping for {diff} seconds...')
+            time.sleep(diff)
 
 # Runs the bot, all functions & everything
 if __name__ == "__main__":
