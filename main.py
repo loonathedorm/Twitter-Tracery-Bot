@@ -13,7 +13,7 @@ import keep_alive
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v4.3"
+version = "v4.4"
 
 def version_check():
     """Check for latest version"""
@@ -111,7 +111,6 @@ def add_to_log(error):
     print(f'####---> {error_string}')
     logging.exception(error_string)
 
-
 def parse_args(args):
     """Parse arguments given to the bot"""
     parser = argparse.ArgumentParser()
@@ -175,7 +174,7 @@ def main():
 
         # Tweet decision based on time difference
         if time_diff >= time_between_tweets or "-" in str(time_diff):
-            for num in range(2):
+            for count, num in enumerate(range(2), start=1):
                 try:
                     if not imgs:
                         post_to_twitter(api_v2,quote,include_datetime)
@@ -188,9 +187,10 @@ def main():
                     break
                 except Exception as error:
                     add_to_log(error)
-                    retry_after = 20
-                    print(f"####---> Retrying in {retry_after} seconds...")
-                    time.sleep(retry_after)
+                    if count < 2:
+                        retry_after = 2
+                        print(f"####---> Retrying in {retry_after} seconds...")
+                        time.sleep(retry_after)
             time.sleep(time_between_tweets)
         else:
             diff = time_between_tweets - time_diff
