@@ -105,12 +105,17 @@ def tracery_magic():
     imgs = re.findall(r'\bhttps?://[^}\s]+',' '.join(raw_img_links))
     return parsed_quote,imgs
 
-def add_to_log(log_string):
-    """Adds a new entry to the logfile"""
+def init_logger():
+    """Initializes the logger"""
+    logger = logging.getLogger("Twitter-Bot")
     log_format = logging.Formatter('\n%(asctime)s %(message)s')
     log_file = logging.FileHandler('bot.log')
     log_file.setFormatter(log_format)
     logger.addHandler(log_file)
+    return logger
+
+def add_to_log(log_string):
+    """Adds a new entry to the logfile"""
     print(f'####---> {log_string}')
     logger.exception(log_string)
 
@@ -142,7 +147,7 @@ def main():
     time_between_tweets = int(settings["time_between_tweets"])
     include_datetime = settings["include_datetime"]
     global logger
-    logger = logging.getLogger("Twitter-Bot")
+    logger = init_logger()
     api_v1, api_v2 = init_twitter_client()
 
 
@@ -194,7 +199,7 @@ def main():
                     log_string = f'An error has occured: {error}'
                     add_to_log(log_string)
                     if count < 2:
-                        retry_after = 2
+                        retry_after = 30
                         print(f"####---> Retrying in {retry_after} seconds...")
                         time.sleep(retry_after)
             time.sleep(time_between_tweets)
