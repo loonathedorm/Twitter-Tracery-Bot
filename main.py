@@ -13,7 +13,7 @@ import keep_alive
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v4.4"
+version = "v4.5"
 
 def version_check():
     """Check for latest version"""
@@ -70,7 +70,8 @@ def get_imgs(api_v1,imgs):
             media_id = upload_to_twitter(api_v1, filepath)
             media_ids.append(media_id)
         except Exception as error:
-            add_to_log(f"{error} for image {img}")
+            log_string = f"{error} for image {img}"
+            add_to_log(log_string)
             backup_file = "temp-imgs/unavailable.jpg"
             media_id = upload_to_twitter(api_v1, backup_file)
             media_ids.append(media_id)
@@ -104,12 +105,14 @@ def tracery_magic():
     imgs = re.findall(r'\bhttps?://[^}\s]+',' '.join(raw_img_links))
     return parsed_quote,imgs
 
-def add_to_log(error):
+def add_to_log(log_string):
     """Adds a new entry to the logfile"""
-    logging.basicConfig(filename="bot.log",format='\n%(asctime)s %(message)s',filemode='a')
-    error_string = f'An error has occured: {error}'
-    print(f'####---> {error_string}')
-    logging.exception(error_string)
+    log_format = logging.Formatter('\n%(asctime)s %(message)s')
+    log_file = logging.FileHandler('bot.log')
+    log_file.setFormatter(log_format)
+    logger.addHandler(log_file)
+    print(f'####---> {log_string}')
+    logger.exception(log_string)
 
 def parse_args(args):
     """Parse arguments given to the bot"""
@@ -138,6 +141,8 @@ def main():
     using_replit = settings["using_replit"]
     time_between_tweets = int(settings["time_between_tweets"])
     include_datetime = settings["include_datetime"]
+    global logger
+    logger = logging.getLogger("Twitter-Bot")
     api_v1, api_v2 = init_twitter_client()
 
 
@@ -186,7 +191,8 @@ def main():
                         settings_file.writelines(lines)
                     break
                 except Exception as error:
-                    add_to_log(error)
+                    log_string = f'An error has occured: {error}'
+                    add_to_log(log_string)
                     if count < 2:
                         retry_after = 2
                         print(f"####---> Retrying in {retry_after} seconds...")
