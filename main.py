@@ -10,35 +10,36 @@ import logging
 import tweepy
 import tracery
 import keep_alive
+from colorama import Fore, Back, Style
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v4.6"
+version = "v4.7"
 
 def version_check():
     """Check for latest version"""
     latest_version = requests.get("https://raw.githubusercontent.com/loonathedorm/Twitter-Quotes-Bot/main/version", timeout=10)
     if latest_version.text != version:
-        print(f"\n\n####---> Current Version = {version}, Latest Version = {latest_version.text}")
-        print("\n####---> Please wait while bot updates itself...\n")
+        print(Fore.GREEN + f"\n\n####---> Current Version = {version}, Latest Version = {latest_version.text}")
+        print("\n####---> Please wait while the bot updates itself...\n" + Style.RESET_ALL)
         time.sleep(1)
         os.system('git stash && git pull && git stash pop')
-        print("\n####---> UPDATE COMPLETE! Please Re-Run the bot to continue...\n")
+        print(Fore.GREEN + "\n####---> UPDATE COMPLETE! Please Re-Run the bot to continue...\n" + Style.RESET_ALL)
         sys.exit()
     else:
-        print(f"####---> Current Version = {version}")
+        print(Fore.GREEN + f"####---> Current Version = {version}" + Style.RESET_ALL)
 
 def replit_check(using_replit):
     """Checking for server or replit mode"""
     if using_replit.lower() == "true":
     # Running flask web server to indicate bot status
         keep_alive.keep_alive()
-        print("####---> Running in replit mode...")
+        print(Fore.GREEN + "####---> Running in replit mode..." + Style.RESET_ALL)
         time.sleep(2)
     elif using_replit.lower() == "false":
-        print("####---> Running in local/server mode...")
+        print(Fore.GREEN + "####---> Running in local/server mode..." + Style.RESET_ALL)
     else:
-        print("####---> Please set 'using_server' value in setting file to 'True' or 'False'")
+        print(Back.RED + Fore.BLACK + "####---> Please set 'using_server' value in setting file to 'True' or 'False'" + Style.RESET_ALL)
         sys.exit()
 
 def init_twitter_client():
@@ -48,7 +49,7 @@ def init_twitter_client():
     consumer_secret = settings["consumer_secret"] if settings["consumer_secret"] != "" else os.getenv("consumer_secret")
     access_token = settings["access_token"] if settings["access_token"] != "" else os.getenv("access_token")
     access_token_secret = settings["access_token_secret"] if settings["access_token_secret"] != "" else os.getenv("access_token_secret")
-    print("####---> Obtained Credentials...")
+    print(Fore.GREEN + "####---> Obtained Credentials..." + Style.RESET_ALL)
 
     auth = tweepy.OAuthHandler(consumer_key,consumer_secret)
     auth.set_access_token(access_token,access_token_secret)
@@ -92,7 +93,7 @@ def post_to_twitter(api_v2,quote,include_datetime,media_ids=None):
     if include_datetime.lower() == 'true':
         quote = (f"[{str(datetime.now()).rsplit(':',1)[0]}]\n\n") + quote
     tweet = api_v2.create_tweet(media_ids=media_ids,text=quote)
-    print(f'\n####---> Posted: ID={tweet[0]["id"]}, QUOTE={quote}')
+    print(Fore.GREEN + f'\n####---> Posted: ID={tweet[0]["id"]}, QUOTE={quote}' + Style.RESET_ALL)
 
 def tracery_magic():
     """Opening json and applying tracery magic.
@@ -118,7 +119,7 @@ def init_logger():
 
 def add_to_log(log_string):
     """Adds a new entry to the logfile"""
-    print(f'####---> {log_string}')
+    print(Fore.YELLOW + f'####---> {log_string}' + Style.RESET_ALL)
     logger.exception(log_string)
 
 def parse_args(args):
@@ -157,7 +158,7 @@ def main():
     args = parse_args(sys.argv[1:])
     if args.quote:
         quote,imgs = tracery_magic()
-        print(quote,imgs)
+        print(Fore.BLUE + f'\n{quote},{imgs}\n' + Style.RESET_ALL)
         sys.exit()
     if args.tweet:
         quote,imgs = tracery_magic()
@@ -170,8 +171,8 @@ def main():
 
     # Replit check & bot/API initialization
     replit_check(using_replit)
-    print("####---> Starting bot...")
-    print(f'####---> Time between tweets set to {time_between_tweets} seconds...')
+    print(Fore.GREEN + "####---> Starting bot..." + Style.RESET_ALL)
+    print(Fore.GREEN + f'####---> Time between tweets set to {time_between_tweets} seconds...' + Style.RESET_ALL)
 
     # The main loop of the bot
     while True:
@@ -202,12 +203,12 @@ def main():
                     add_to_log(log_string)
                     if count < 2:
                         retry_after = 30
-                        print(f"####---> Retrying in {retry_after} seconds...")
+                        print(Back.RED + Fore.BLACK + f"####---> Retrying in {retry_after} seconds..." + Style.RESET_ALL)
                         time.sleep(retry_after)
             time.sleep(time_between_tweets)
         else:
             diff = time_between_tweets - time_diff
-            print(f'####---> Sleeping for {diff} seconds...')
+            print(Fore.GREEN + f'####---> Sleeping for {diff} seconds...' + Style.RESET_ALL)
             time.sleep(diff)
 
 # Runs the bot, all functions & everything
