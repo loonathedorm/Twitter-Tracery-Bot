@@ -14,7 +14,7 @@ from colorama import Fore, Back, Style
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v4.7"
+version = "v4.7.1"
 
 def version_check():
     """Check for latest version"""
@@ -24,7 +24,7 @@ def version_check():
         print("\n####---> Please wait while the bot updates itself...\n" + Style.RESET_ALL)
         time.sleep(1)
         os.system('git stash && git pull && git stash pop')
-        print(Fore.GREEN + "\n####---> UPDATE COMPLETE! Please Re-Run the bot to continue...\n" + Style.RESET_ALL)
+        print(Fore.GREEN + "\n####---> UPDATE PROCESS COMPLETE! Please Re-Run the bot to continue...\n" + Style.RESET_ALL)
         sys.exit()
     else:
         print(Fore.GREEN + f"####---> Current Version = {version}" + Style.RESET_ALL)
@@ -152,7 +152,6 @@ def main():
     global logger
     logger = init_logger()
     api_v1, api_v2 = init_twitter_client()
-
 
     # Parsing Arguments
     args = parse_args(sys.argv[1:])
