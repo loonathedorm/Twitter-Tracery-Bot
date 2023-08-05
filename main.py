@@ -13,15 +13,17 @@ import keep_alive
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v4.5"
+version = "v4.6"
 
 def version_check():
     """Check for latest version"""
     latest_version = requests.get("https://raw.githubusercontent.com/loonathedorm/Twitter-Quotes-Bot/main/version", timeout=10)
     if latest_version.text != version:
-        print(f"####---> Current Version = {version}, Latest Version = {latest_version.text}")
-        print("####---> Please update the bot to continue with latest fixes and features.")
-        print("####---> To update, type 'git pull' and hit enter inside the shell tab and then restart the bot.")
+        print(f"\n\n####---> Current Version = {version}, Latest Version = {latest_version.text}")
+        print("\n####---> Please wait while bot updates itself...\n")
+        time.sleep(1)
+        os.system('git stash && git pull && git stash pop')
+        print("\n####---> UPDATE COMPLETE! Please Re-Run the bot to continue...\n")
         sys.exit()
     else:
         print(f"####---> Current Version = {version}")
