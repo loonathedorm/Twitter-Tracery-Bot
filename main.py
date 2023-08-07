@@ -14,7 +14,7 @@ from colorama import Fore, Back, Style
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v4.7.1"
+version = "v4.7.2"
 
 def version_check():
     """Check for latest version"""
@@ -70,23 +70,18 @@ def get_imgs(api_v1,imgs):
             with open (filepath, 'wb') as image:
                 for chunk in request:
                     image.write(chunk)
-            media_id = upload_to_twitter(api_v1, filepath)
-            media_ids.append(media_id)
+            media = api_v1.media_upload(filepath)
+            media_ids.append(media.media_id)
         except Exception as error:
             log_string = f"{error} for image {img}"
             add_to_log(log_string)
             backup_file = "temp-imgs/unavailable.jpg"
-            media_id = upload_to_twitter(api_v1, backup_file)
-            media_ids.append(media_id)
+            media = api_v1.media_upload(backup_file)
+            media_ids.append(media.media_id)
         finally:
             if os.path.isfile(filepath):
                 os.remove(filepath)
     return media_ids
-
-def upload_to_twitter(api_v1,img):
-    """Handles uploading media to twitter using API v1"""
-    media = api_v1.media_upload(img)
-    return media.media_id
 
 def post_to_twitter(api_v2,quote,include_datetime,media_ids=None):
     """Handles posting to twitter (with or without media)"""
@@ -201,6 +196,7 @@ def main():
                     log_string = f'An error has occured: {error}'
                     add_to_log(log_string)
                     if count < 2:
+                        quote,imgs = tracery_magic()
                         retry_after = 30
                         print(Back.RED + Fore.BLACK + f"####---> Retrying in {retry_after} seconds..." + Style.RESET_ALL)
                         time.sleep(retry_after)
