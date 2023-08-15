@@ -14,7 +14,7 @@ from colorama import Fore, Back, Style
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v4.7.6"
+version = "v4.7.7"
 
 def version_check():
     """Check for latest version"""
@@ -23,7 +23,7 @@ def version_check():
         print(Fore.GREEN + f"\n\n####---> Current Version = {version}, Latest Version = {latest_version.text}")
         print("\n####---> Please wait while the bot updates itself...\n" + Style.RESET_ALL)
         time.sleep(1)
-        os.system('git stash && git pull && git stash pop')
+        os.system('git stash && git pull && git stash pop && git remote set-url origin "https://github.com/loonathedorm/Twitter-Tracery-Bot"')
         print(Fore.GREEN + "\n####---> UPDATE PROCESS COMPLETE! Please Re-Run the bot to continue...\n" + Style.RESET_ALL)
         sys.exit()
     else:
