@@ -14,16 +14,16 @@ from colorama import Fore, Back, Style
 from tracery.modifiers import base_english
 from datetime import datetime
 
-version = "v4.7.2"
+version = "v4.7.5"
 
 def version_check():
     """Check for latest version"""
-    latest_version = requests.get("https://raw.githubusercontent.com/loonathedorm/Twitter-Quotes-Bot/main/version", timeout=10)
+    latest_version = requests.get("https://raw.githubusercontent.com/loonathedorm/Twitter-Tracery-Bot/main/version", timeout=10)
     if latest_version.text != version:
         print(Fore.GREEN + f"\n\n####---> Current Version = {version}, Latest Version = {latest_version.text}")
         print("\n####---> Please wait while the bot updates itself...\n" + Style.RESET_ALL)
         time.sleep(1)
-        os.system('git stash && git pull && git stash pop')
+        os.system('git stash && git pull && git stash pop && git remote set-url origin "https://github.com/loonathedorm/Twitter-Tracery-Bot"')
         print(Fore.GREEN + "\n####---> UPDATE PROCESS COMPLETE! Please Re-Run the bot to continue...\n" + Style.RESET_ALL)
         sys.exit()
     else:

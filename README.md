@@ -1,13 +1,14 @@
 # Twitter Quotes Bot
 
-* ### A Python bot that automatically tweets quotes/lyrics at regular intervals using the Twitter API.
+* ### A Python bot that automatically tweets posts generated using Tracery grammar at regular intervals using the Twitter API.
 * ### Can be deployed for free on [Replit](https://replit.com) or on your local machine or server.
 * ### This is an alternative for those previously using CheapBotsDoneQuick to run their bot.
-* ### Recently added Tracery support now allows you to run bots that use a more complex .json file.
+* ### Tracery support allows you to run bots that use a more complex .json file.
 * ### Now also works with Images/Video bots that directly include the media url in their tracery code.
 
 ## See it in action:
-- ### Check out [@FFiftyLyricsBot](https://twitter.com/FFiftylyricsbot) on Twitter
+- ### [@FFiftyLyricsBot](https://twitter.com/FFiftylyricsbot) on Twitter
+- ### [@LyricallyIU](https://twitter.com/LyricallyIU) on Twitter
 
 ## Setup:
 
